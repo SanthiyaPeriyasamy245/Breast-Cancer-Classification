@@ -1,0 +1,75 @@
+
+Data Cleaning process
+
+I. Handling Missing Values.
+
+1.Understand the data.
+2.Check for missing values
+3.Count missing values
+4.handling nan values (repalce missing values (dropna,fillna(method="ffill",axis=0 or 1).fillna(0)).
+
+1.Take a first look at the data.
+
+# modules we'll use
+import pandas as pd
+import numpy as np
+
+# read in all our data
+nfl_data = pd.read_csv("../input/nflplaybyplay2009to2016/NFL Play by Play 2009-2017 (v4).csv")
+
+# set seed for reproducibility
+np.random.seed(0) 
+
+2. check for head elements is there any nan or none values
+
+3. count number of missing values
+
+# get the number of missing data points per column
+missing_values_count = nfl_data.isnull().sum()
+
+# look at the # of missing points in the first ten columns
+missing_values_count[0:10]
+
+4.  Number of missing values in percentage
+
+# how many total missing values do we have?
+total_cells = np.product(nfl_data.shape)
+total_missing = missing_values_count.sum()
+
+# percent of data that is missing
+percent_missing = (total_missing/total_cells) * 100
+print(percent_missing)
+
+5.Figure out why the data is missing?
+ask yourself : Is this value missing because it wasn't recorded or because it doesn't exist?
+If a value is missing becuase it doesn't exist (like the height of the oldest child of someone who doesn't have any children) then it doesn't make sense to try and guess what it might be. These values you probably do want to keep as NaN. On the other hand, if a value is missing because it wasn't recorded, then you can try to guess what it might have been based on the other values in that column and row. This is called imputation.
+
+# remove all the rows that contain a missing value
+nfl_data.dropna() -> not recommended but if you want to you can drop the columns which contains duplicate values
+
+# remove all columns with at least one missing value
+columns_with_na_dropped = nfl_data.dropna(axis=1)
+columns_with_na_dropped.head()
+
+Filling in missing values automatically
+# replace all NA's with 0
+ 
+# replace all NA's the value that comes directly after it in the same column, 
+# then replace all the remaining na's with 0
+subset_nfl_data.fillna(method='bfill', axis=0).fillna(0)
+
+purpose of seed:
+
+Any function that involves randomness (like np.random.rand(), np.random.shuffle(), or sampling rows) will produce the same result each time you run the code.
+
+This is important for:
+
+Reproducibility (other people or future you get the same output).
+
+Debugging (same random data lets you test reliably).
+
+Experiments (fair comparisons between model versions or algorithms).
+
+example :np.random.seed(0)
+print(np.random.randint(1, 100, 5))
+if i run the cell multiple times it will produce same 5 numbers every time.
